@@ -1,0 +1,115 @@
+<!--
+ - excelClipboardRerader
+ - @date 21/10/2024
+ - @createdBy wrnunzio
+ - @modifiedBy
+ - @history
+ -->
+
+<!-- Excel Clipboard Reader -->
+<template>
+
+    <lightning-spinner lwc:if={showSpinner} size="large"></lightning-spinner>
+    <div if:false={showErrorsOrWarnings} class="slds-form-element slds-p-around_large">
+        <label class="slds-form-element__label" for="textarea-id-01"> </label>
+        <div class="slds-form-element__control">
+          <textarea id="textarea-id-01" class="slds-textarea" label="Paste Excel/GoogleSpreadsheets format"
+                    lwc:ref="excelClip"
+                    onkeydown={saveClip}
+                    disabled={disabledTextArea}
+                    placeholder="Paste Excel/GoogleSpreadsheets format"
+          ></textarea>
+        </div>
+    </div>
+
+    <div  if:true={showErrorsOrWarnings} class="slds-form-element slds-p-around_large">
+        <h1 id="element-with-table-label" class="slds-m-top_medium slds-text-heading_medium slds-m-bottom_xx-small">
+            Please check the information below before committing those changes!</h1>
+        <h3 id="other-element-with-table-label" class="slds-text-title slds-m-bottom_small">Import button will be disabled if errors are found!</h3>
+        <template lwc:if={showErrors}>
+            <h1 id="element-with-table-label3"
+                class="slds-m-top_medium slds-text-heading_medium slds-m-bottom_xx-small">Errors:</h1>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered"
+                   aria-labelledby="element-with-table-label other-element-with-table-label">
+                <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col" style="width:50%">
+                        <div class="slds-truncate" title="Type">Field</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Error detail">Detail</div>
+                    </th>
+
+                </tr>
+                </thead>
+                <tbody>
+
+                <template for:each={errors} for:index="i" for:item="error">
+                    <tr key={error} class="slds-hint-parent">
+                        <td key={error} data-label={error.fieldName}>
+                            <div class="slds-truncate" title="Field in Error">{error.fieldName}</div>
+                        </td>
+                        <td key={error} data-label={error.description}>
+                            <div class="slds-truncate" title="error description">{error.description}</div>
+                        </td>
+                    </tr>
+                </template>
+
+                </tbody>
+            </table>
+        </template>
+
+        <template lwc:if={showWarnings}>
+            <h1 id="element-with-table-label33"
+                class="slds-m-top_medium slds-text-heading_medium slds-m-bottom_xx-small">Warnings:</h1>
+
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered"
+                   aria-labelledby="element-with-table-label other-element-with-table-label">
+                <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col" style="width:50%">
+                        <div class="slds-truncate" title="FieldName">FieldName</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="warning detail">Detail</div>
+                    </th>
+
+                </tr>
+                </thead>
+                <tbody>
+
+                <template for:each={warnings} for:index="i" for:item="warning">
+                    <tr key={warning} class="slds-hint-parent">
+                        <td key={warning} data-label={warning.fieldName}>
+                            <div class="slds-truncate" title="Field in warning">{warning.fieldName}</div>
+                        </td>
+                        <td key={warning} data-label={warning.description}>
+                            <div class="slds-truncate" title="warning description">{warning.description}</div>
+                        </td>
+                    </tr>
+                </template>
+
+                </tbody>
+            </table>
+        </template>
+
+    </div>
+
+
+    <div class="slds-text-align_center">
+        <lightning-button if:false={showErrorsOrWarnings} onclick={convert}
+                          disabled={disableImpBtn}
+                          class=slds-p-around_x-small
+                          label="Validate inputs"
+                          name="Convert from cliboard"></lightning-button>
+        <lightning-button lwc:if={showErrorsOrWarnings} disabled={showErrors}
+                          class=slds-p-around_x-small
+                          label="Import"
+                          name="Convert from cliboard"></lightning-button>
+        <lightning-button onclick={cancel}
+                          label="Cancel"
+                          class=slds-p-around_x-small
+                          name="Revert pasted text"></lightning-button>
+    </div>
+
+</template>
