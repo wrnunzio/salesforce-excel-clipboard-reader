@@ -16,8 +16,7 @@ public virtual without sharing class ReadExcelFormatClipboard {
     private String excelTableString = '';
     private Boolean isFromAura = false;
     private Boolean manageErrors = false;
-    /* @AuraEnabled
-     public Map<Integer, Map<String, String>> mappedExcelTable = new Map<Integer, Map<String, String>>();*/
+    private Integer numeberOfErrorsAfterValidation = 0;
     
     private List<String> possibleColumnsHeaders = new List<String>{
             'Proprietario', 'Stato', 'Fase', 'Note'
@@ -61,15 +60,8 @@ public virtual without sharing class ReadExcelFormatClipboard {
     public class Validation {
         @AuraEnabled
         public String typex;
-        /*       @AuraEnabled
-               public Map<String, Boolean>validationMap; //header name, true,false*/
         @AuraEnabled
         public List<ValidationRow>validationRows; //header name, error/warning description
-        
-        /*   public Validation(ValidationEnum typex, Map<String, Boolean>validationMap) {
-               this.typex = typex.name();
-               this.validationMap = validationMap;
-           }*/
         public Validation(ValidationEnum typex, List<ValidationRow>validationRows) {
             this.typex = typex.name();
             this.validationRows = validationRows;
@@ -100,23 +92,19 @@ public virtual without sharing class ReadExcelFormatClipboard {
     }
     
     private List<Validation> validateHeaders(List<String> headers) {
-        //Map<String, Boolean>validationErrorsMap = new Map<String, Boolean>();
-        //Map<String, Boolean>validationWarningsMap = new Map<String, Boolean>();
-        List<ValidationRow>validationRowsErrors = new List<ValidationRow>();
-        List<ValidationRow>validationRowsWarnings = new List<ValidationRow>();
+        Map<String, ValidationRow>validationRowsErrors = new Map<String, ValidationRow>();
+        Map<String, ValidationRow>validationRowsWarnings = new Map<String, ValidationRow>();
         List<Validation> validations = new List<Validation>();
         //prepopulate map with required fields
         for (Integer x = 0; x < requiredColumnsHeaders.size(); x++) {
-            //validationErrorsMap.put(requiredColumnsHeaders[x], false);
-            validationRowsErrors.add(new ValidationRow(requiredColumnsHeaders[x], REQUIRED_FIELD_ERROR));
+            validationRowsErrors.put(requiredColumnsHeaders[x], new ValidationRow(requiredColumnsHeaders[x], REQUIRED_FIELD_ERROR));
         }
         
         for (Integer x = 0; x < requiredColumnsHeaders.size(); x++) {
             for (Integer i = 0; i < headers.size(); i++) {
                 String currentHeader = headers[i];
                 if (requiredColumnsHeaders[x] == currentHeader) {
-                    //validationErrorsMap.put(currentHeader, true);
-                    validationRowsErrors.add(new ValidationRow(requiredColumnsHeaders[x], VALIDATED));
+                    validationRowsErrors.put(requiredColumnsHeaders[x], new ValidationRow(requiredColumnsHeaders[x], VALIDATED));
                 }
             }
         }
@@ -124,15 +112,17 @@ public virtual without sharing class ReadExcelFormatClipboard {
         
         for (Integer x = 0; x < headers.size(); x++) {
             if (!possibleColumnsHeaders.contains(headers[x])) {
-                //validationWarningsMap.put(headers[x], true);
-                validationRowsWarnings.add(new ValidationRow(headers[x], FIELD_NOT_RECOGNIZED));
+                validationRowsWarnings.put(headers[x], new ValidationRow(headers[x], FIELD_NOT_RECOGNIZED));
                 System.debug('Warning: Unexpected header' + headers[x]);
             }
         }
-        validations.add(new Validation(ValidationEnum.VALIDATION_WARNING, validationRowsWarnings));
+        validations.add(new Validation(ValidationEnum.VALIDATION_WARNING, validationRowsWarnings.values()));
         
-        validationRowsErrors = reduceX(validationRowsErrors);
-        validations.add(new Validation(ValidationEnum.VALIDATION_ERROR, validationRowsErrors));
+        validationRowsErrors = reduce(validationRowsErrors.values());
+        validations.add(new Validation(ValidationEnum.VALIDATION_ERROR, validationRowsErrors.values()));
+        
+        numeberOfErrorsAfterValidation = validationRowsErrors.values().size();
+        
         if (!validationRowsErrors.isEmpty() && !manageErrors) {
             if (isFromAura) {
                 throw new AuraHandledException('Missing required header: ' + validationRowsErrors);
@@ -143,21 +133,11 @@ public virtual without sharing class ReadExcelFormatClipboard {
         return validations;
     }
     
-    private Map<String, Boolean> reduce(Map<String, Boolean>r) {
-        Map<String, Boolean>res = new Map<String, Boolean>();
-        for (String header : r.keySet()) {
-            if (!r.get(header)) {
-                res.put(header, false);
-            }
-        }
-        
-        return res;
-    }
-    private List<ValidationRow> reduceX(List<ValidationRow>r) {
-        List<ValidationRow>res = new List<ValidationRow>();
+    private Map<String, ValidationRow> reduce(List<ValidationRow>r) {
+        Map<String, ValidationRow>res = new Map<String, ValidationRow>();
         for (ValidationRow row : r) {
             if (!String.isBlank(row.description)) {
-                res.add(row);
+                res.put(row.fieldName, row);
             }
         }
         return res;
@@ -230,7 +210,11 @@ public virtual without sharing class ReadExcelFormatClipboard {
         
         ConvertResult result = new ConvertResult(validations, mappedExcelTable);
         
-        result = customValidations(result);
+        //custom validation are applying only if no formal validation error are present
+        if (numeberOfErrorsAfterValidation == 0) {
+            result = customValidations(result);
+        }
+        
         return result;
     }
 

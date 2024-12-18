@@ -45,11 +45,11 @@
                 <tbody>
 
                 <template for:each={errors} for:index="i" for:item="error">
-                    <tr key={error} class="slds-hint-parent">
-                        <td key={error} data-label={error.fieldName}>
+                    <tr key={error.fieldName} class="slds-hint-parent">
+                        <td data-label={error.fieldName}>
                             <div class="slds-truncate" title="Field in Error">{error.fieldName}</div>
                         </td>
-                        <td key={error} data-label={error.description}>
+                        <td  data-label={error.description}>
                             <div class="slds-truncate" title="error description">{error.description}</div>
                         </td>
                     </tr>
@@ -79,11 +79,11 @@
                 <tbody>
 
                 <template for:each={warnings} for:index="i" for:item="warning">
-                    <tr key={warning} class="slds-hint-parent">
-                        <td key={warning} data-label={warning.fieldName}>
+                    <tr key={warning.fieldName} class="slds-hint-parent">
+                        <td data-label={warning.fieldName}>
                             <div class="slds-truncate" title="Field in warning">{warning.fieldName}</div>
                         </td>
-                        <td key={warning} data-label={warning.description}>
+                        <td data-label={warning.description}>
                             <div class="slds-truncate" title="warning description">{warning.description}</div>
                         </td>
                     </tr>
@@ -105,6 +105,7 @@
         <lightning-button lwc:if={showErrorsOrWarnings} disabled={showErrors}
                           class=slds-p-around_x-small
                           label="Import"
+                          onclick={handleImport}
                           name="Convert from cliboard"></lightning-button>
         <lightning-button onclick={cancel}
                           label="Cancel"

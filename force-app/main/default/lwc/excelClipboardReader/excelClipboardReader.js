@@ -16,6 +16,7 @@ export default class ExcelClipboardReader extends LightningElement {
     showSpinner = false;
     @track errors = []
     @track warnings = []
+    @track mappedExcelTable;
 
     async saveClip(event) {
         console.log('##eventkeycode##', event.keyCode);
@@ -52,6 +53,7 @@ export default class ExcelClipboardReader extends LightningElement {
         this.showSpinner=true;
         convert({tableAsString: this.currentPastedTable.text}).then(res => {
             console.log('##res##', res);
+            this.mappedExcelTable = res.mappedExcelTable;
             for (let validation of res.validations) {
 
        /*         for (const [key, value] of Object.entries(r.validationMap)) {
@@ -78,6 +80,11 @@ export default class ExcelClipboardReader extends LightningElement {
             console.log('####', err);
             this.showSpinner=false;
         })
+    }
+
+    handleImport(){
+        console.log('Implement your logic');
+        console.log(JSON.stringify(this.mappedExcelTable));
     }
 
     get disableImpBtn() {
