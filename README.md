@@ -73,17 +73,7 @@ Handles the logic for processing user input and interacting with the backend.
 
 ## 🚀 How to Use
 
-### 1️⃣ Deploy the Component
-Deploy the following components to your Salesforce Org:
-- 🛠️ `ReadExcelFormatClipboard` Apex Class.
-- 🛠️ `ReadExcelFormatClipboardAuraCtrl` Apex Class.
-- 🖥️ `excelClipboardReader` LWC (HTML, JS).
-
-### 2️⃣ Add the LWC to a Lightning Page
-- 🖱️ Open the **Lightning App Builder**.
-- 🖼️ Drag and drop the `excelClipboardReader` component onto a page.
-
-### 3️⃣ Usage
+### 1️⃣ Usage
 - 📋 Copy a table from Excel or Google Sheets.
 - 📋 Paste it into the text area of the component.
 - 🖱️ Click "Validate Inputs" to process the data and view any ⚠️ errors or ℹ️ warnings.
