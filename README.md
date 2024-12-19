@@ -2,7 +2,7 @@
 
 ### 📝 Overview
 
-The **Excel Clipboard Reader** is a Salesforce Lightning Web Component (LWC) that enables users to paste data from Excel or Google Sheets into a text area. The component processes the pasted data, performs validations, and displays errors ⚠️ or warnings ℹ️ if any issues are found. The backend logic in Apex processes the data and returns a mapped table for further use.
+The **Excel Clipboard Reader** is a Salesforce native way to enable users to paste data from Excel or Google Sheets into a text area and have it converted in friendly format. The component processes the pasted data, performs validations, and displays errors ⚠️ or warnings ℹ️ if any issues are found. The backend logic in Apex processes the data and returns a mapped table for further use.
 
 ---  
 
