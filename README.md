@@ -34,9 +34,9 @@ The **Excel Clipboard Reader** is a Salesforce Lightning Web Component (LWC) tha
     - 🔄 Supports custom validation logic using the `customValidations` method.
     - ⚡ Throws exceptions if the data is too large or validation errors are found (configurable for Aura or non-Aura contexts).
     - 📋 Outputs the data as a `ConvertResult` containing validations and the mapped table.
-    - 🟩 **Supports configurable column headers**:
+    - 🟩 Supports configurable column headers:
         - Set **possible headers** using `setPossibleColumnsHeaders`.
-        - Set 🟥 **required headers** using `setRequiredColumnsHeaders`.
+        - Set **required headers** using `setRequiredColumnsHeaders`.
 
 ---
 
